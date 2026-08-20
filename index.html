@@ -54,6 +54,23 @@ input, textarea { font-family: inherit; color: inherit; }
 }
 .nx-setup-card ol { font-size: 13.5px; line-height: 1.7; color: var(--nx-ink-soft); padding-left: 20px; margin: 0; }
 
+/* ---------- auth screen ---------- */
+#authScreen {
+  display: none; position: fixed; inset: 0; z-index: 150; background: #fff;
+  align-items: center; justify-content: center; padding: 24px;
+}
+#authScreen.show { display: flex; }
+.nx-auth-card {
+  max-width: 340px; width: 100%; border: 1px solid var(--nx-line); border-radius: 20px;
+  padding: 32px 28px; display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.nx-auth-card .nx-icon-lock { color: var(--nx-muted); margin-bottom: 12px; }
+.nx-auth-card h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 21px; margin: 0 0 4px; }
+.nx-auth-card p { font-size: 13px; color: var(--nx-muted); margin: 0 0 20px; }
+.nx-auth-card form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+.nx-auth-card .nx-input { text-align: left; }
+.nx-auth-error { color: var(--nx-danger); font-size: 12.5px; min-height: 16px; margin: 8px 0 0; }
+
 /* ---------- topbar ---------- */
 .nx-topbar {
   display: flex; align-items: center; gap: 14px;
@@ -219,6 +236,7 @@ input, textarea { font-family: inherit; color: inherit; }
 .nx-btn--primary { background: var(--nx-ink); color: #fff; }
 .nx-btn--primary:hover { opacity: 0.88; }
 .nx-btn--primary.is-disabled { opacity: 0.32; cursor: not-allowed; }
+.nx-btn--primary:disabled { opacity: 0.5; cursor: default; }
 .nx-btn--ghost { background: var(--nx-surface); border: 1px solid var(--nx-line); color: var(--nx-ink); }
 .nx-btn--ghost:hover { background: #f0f0f0; }
 .nx-btn--outline { background: transparent; border: 1px solid var(--nx-line-strong); color: var(--nx-ink); width: 100%; }
@@ -248,7 +266,7 @@ input, textarea { font-family: inherit; color: inherit; }
 .nx-scrim.is-visible { opacity: 1; pointer-events: auto; }
 
 .nx-drawer {
-  position: fixed; top: 0; left: 0; bottom: 0; width: min(380px, 88vw);
+  position: fixed; top: 0; left: 0; bottom: 0; width: min(400px, 90vw);
   background: #fff; border-right: 1px solid var(--nx-line);
   transform: translateX(-100%); transition: transform 0.32s cubic-bezier(.2,.7,.2,1);
   z-index: 50; display: flex; flex-direction: column;
@@ -256,29 +274,63 @@ input, textarea { font-family: inherit; color: inherit; }
 .nx-drawer.is-open { transform: translateX(0); box-shadow: 20px 0 40px rgba(10,10,10,0.08); }
 .nx-drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 8px; }
 .nx-drawer__title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; }
+.nx-drawer__head-actions { display: flex; align-items: center; gap: 2px; }
 .nx-drawer__export { margin: 6px 18px 14px; width: auto; }
 .nx-drawer__body { flex: 1; overflow-y: auto; padding: 4px 18px 28px; }
+
+.nx-search { position: relative; margin: 4px 18px 14px; }
+.nx-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--nx-muted); pointer-events: none; }
+.nx-search input {
+  width: 100%; border: 1px solid var(--nx-line); border-radius: 12px;
+  padding: 10px 34px; font-size: 13.5px; background: var(--nx-surface);
+}
+.nx-search input:focus { outline: none; border-color: var(--nx-line-strong); background: #fff; }
+.nx-search__clear {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  color: var(--nx-muted); border-radius: 8px;
+}
+.nx-search__clear:hover { background: #fff; color: var(--nx-ink); }
+.nx-search-label { font-size: 11.5px; color: var(--nx-muted); margin: 0 18px 10px; font-family: 'IBM Plex Mono', monospace; }
 
 .nx-empty {
   display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
   color: var(--nx-muted); padding: 60px 20px; font-size: 13px; line-height: 1.5;
 }
 
-.nx-history-group { margin-bottom: 22px; }
-.nx-history-date {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11.5px; font-weight: 600; color: var(--nx-ink-soft);
-  text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px;
+/* year / month accordion */
+.nx-year { border-bottom: 1px solid var(--nx-line); }
+.nx-year__head {
+  width: 100%; display: flex; align-items: center; gap: 10px;
+  padding: 13px 2px; font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px;
 }
-.nx-history-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--nx-ink); }
-.nx-history-items { display: flex; flex-direction: column; gap: 6px; padding-left: 2px; border-left: 1px solid var(--nx-line); margin-left: 2px; }
+.nx-year__label { flex: 1; text-align: left; }
+.nx-badge {
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--nx-muted);
+  background: var(--nx-surface); border: 1px solid var(--nx-line); border-radius: 100px; padding: 2px 8px;
+}
+.nx-badge--sm { font-size: 10.5px; padding: 1px 7px; }
+.nx-chev { transition: transform 0.2s ease; color: var(--nx-muted); flex-shrink: 0; }
+.nx-chev--sm { width: 13px; height: 13px; }
+.nx-year.is-open > .nx-year__head .nx-chev { transform: rotate(180deg); }
+.nx-month-list { padding: 0 0 10px 4px; display: flex; flex-direction: column; gap: 4px; }
+.nx-month { border-left: 1px solid var(--nx-line); margin-left: 4px; }
+.nx-month__head {
+  width: 100%; display: flex; align-items: center; gap: 8px;
+  padding: 8px 0 8px 14px; font-size: 13.5px; font-weight: 500;
+}
+.nx-month__label { flex: 1; text-align: left; }
+.nx-month.is-open > .nx-month__head .nx-chev { transform: rotate(180deg); }
+.nx-month__body { padding-left: 14px; }
+.nx-month__loading { display: flex; align-items: center; gap: 8px; padding: 10px 0; color: var(--nx-muted); font-size: 12px; }
+.nx-month__loading svg { width: 15px; height: 15px; }
 
-.nx-history-item { margin-left: 14px; border: 1px solid var(--nx-line); border-radius: 12px; overflow: hidden; background: var(--nx-surface); }
+.nx-history-items { display: flex; flex-direction: column; gap: 6px; padding: 4px 0 8px; }
+.nx-history-item { border: 1px solid var(--nx-line); border-radius: 12px; overflow: hidden; background: var(--nx-surface); }
 .nx-history-item__head { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 13px; }
 .nx-history-item__meta { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .nx-history-item__subject { font-size: 13.5px; font-weight: 600; }
 .nx-history-item__time { font-size: 11px; color: var(--nx-muted); font-family: 'IBM Plex Mono', monospace; }
-.nx-chev { transition: transform 0.2s ease; color: var(--nx-muted); flex-shrink: 0; }
 .nx-history-item.is-open .nx-chev { transform: rotate(180deg); }
 
 .nx-history-item__detail { padding: 0 14px 14px; animation: nx-rise 0.2s ease; }
@@ -301,6 +353,29 @@ input, textarea { font-family: inherit; color: inherit; }
 </head>
 <body>
 
+<!-- ---------- reusable icon defs: parsed once by the browser, cloned on demand.
+     Using a <template> + cloneNode() means icons never depend on innerHTML string
+     injection at runtime, so they can't silently fail to render. ---------- -->
+<template id="iconDefs">
+  <svg data-i="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <svg data-i="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  <svg data-i="xSm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  <svg data-i="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  <svg data-i="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg data-i="checkSm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <svg data-i="info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  <svg data-i="infoSm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+  <svg data-i="sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+  <svg data-i="trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+  <svg data-i="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  <svg data-i="download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  <svg data-i="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+  <svg data-i="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <svg data-i="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <svg data-i="book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+  <svg data-i="logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+</template>
+
 <!-- ---------- setup banner (shown until Supabase keys are configured) ---------- -->
 <div id="setupBanner">
   <div class="nx-setup-card">
@@ -310,8 +385,24 @@ input, textarea { font-family: inherit; color: inherit; }
       <li>Create a free project at supabase.com</li>
       <li>Run the SQL from <code>SETUP.md</code> in the SQL editor</li>
       <li>Copy your Project URL + anon key from Settings → API</li>
-      <li>Paste them into the config constants in this file</li>
+      <li>Create yourself a user under Authentication → Users</li>
+      <li>Paste the URL/key into the config constants in this file</li>
     </ol>
+  </div>
+</div>
+
+<!-- ---------- auth gate ---------- -->
+<div id="authScreen">
+  <div class="nx-auth-card">
+    <span id="authLockIcon" class="nx-icon-lock"></span>
+    <h2>nilxcy</h2>
+    <p>Sign in to open your log.</p>
+    <form id="authForm">
+      <input type="email" class="nx-input" id="authEmail" placeholder="Email" autocomplete="username" required />
+      <input type="password" class="nx-input" id="authPassword" placeholder="Password" autocomplete="current-password" required />
+      <button type="submit" class="nx-btn nx-btn--primary" id="authSubmitBtn" style="width:100%; margin-top:4px;">Sign in</button>
+    </form>
+    <p class="nx-auth-error" id="authError"></p>
   </div>
 </div>
 
@@ -390,7 +481,7 @@ input, textarea { font-family: inherit; color: inherit; }
 
     <div class="nx-card__foot">
       <button type="button" class="nx-btn nx-btn--primary" id="saveBtn"></button>
-      <span class="nx-hint-inline" id="saveHint">Subject and summary are required</span>
+      <span class="nx-hint-inline" id="saveHint"></span>
     </div>
   </div>
 </main>
@@ -403,9 +494,18 @@ input, textarea { font-family: inherit; color: inherit; }
 <aside class="nx-drawer" id="drawer">
   <div class="nx-drawer__head">
     <span class="nx-drawer__title">History</span>
-    <button class="nx-icon-btn" id="closeDrawerBtn" aria-label="Close history"></button>
+    <div class="nx-drawer__head-actions">
+      <button class="nx-icon-btn nx-icon-btn--sm" id="signOutBtn" aria-label="Sign out" title="Sign out"></button>
+      <button class="nx-icon-btn" id="closeDrawerBtn" aria-label="Close history"></button>
+    </div>
   </div>
-  <button type="button" class="nx-btn nx-btn--outline nx-drawer__export" id="exportBtn">Export sheet (.csv)</button>
+  <div class="nx-search">
+    <span id="searchIcon"></span>
+    <input type="text" id="searchInput" placeholder="Search subject or summary…" autocomplete="off" />
+    <button class="nx-search__clear" id="searchClearBtn" style="display:none;" aria-label="Clear search"></button>
+  </div>
+  <p class="nx-search-label" id="searchLabel" style="display:none;"></p>
+  <button type="button" class="nx-btn nx-btn--outline nx-drawer__export" id="exportBtn"></button>
   <div class="nx-drawer__body" id="historyBody"></div>
 </aside>
 
@@ -423,25 +523,16 @@ const isConfigured = !SUPABASE_URL.includes('YOUR_SUPABASE') && !SUPABASE_ANON_K
 let supabase = null;
 
 /* =========================================================================
-   2) small inline icon set (so no external icon library is required)
+   2) icon helper — clones nodes out of the <template> above instead of
+      parsing SVG strings through innerHTML at runtime.
    ========================================================================= */
-const ICONS = {
-  menu: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
-  x: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  xSm: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
-  plus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  plusBig: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-  check: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  checkSm: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  info: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
-  infoSm: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
-  sparkles: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>',
-  trash: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',
-  chevron: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
-  download: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-  book: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-  spin: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
-};
+function icon(name, extraClass) {
+  const src = document.querySelector(`#iconDefs [data-i="${name}"]`);
+  if (!src) return document.createElement('span'); // fail-soft: never throws, just renders empty
+  const node = src.cloneNode(true);
+  if (extraClass) node.classList.add(extraClass);
+  return node;
+}
 
 /* =========================================================================
    3) constants + helpers
@@ -464,6 +555,10 @@ function formatDateShort(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
+function formatMonthLabel(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long' });
+}
 function formatTime12(t) {
   if (!t) return '';
   const [h, m] = t.split(':').map(Number);
@@ -471,9 +566,15 @@ function formatTime12(t) {
   const h12 = h % 12 === 0 ? 12 : h % 12;
   return `${h12}:${pad2(m)} ${period}`;
 }
+function debounce(fn, wait) {
+  let t;
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
+}
+// Guards against CSV formula injection (=, +, -, @ prefixed cells executing in Excel/Sheets)
 function csvEscape(val) {
-  const s = val == null ? '' : String(val);
-  if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  let s = val == null ? '' : String(val);
+  if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  if (/[",\n]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
   return s;
 }
 function entriesToCSV(entries) {
@@ -502,13 +603,23 @@ function downloadCSV(entries) {
 
 /* =========================================================================
    4) state
+   index      = lightweight rows (id, date, subject, keywords) for ALL entries —
+                cheap enough to hold in full even after years of daily logging,
+                and it's all the autocomplete/grouping/search-index needs.
+   monthCache = full entries (summary, learnings, etc.) fetched only for months
+                the person actually opens, keyed by 'YYYY-MM'. This is what
+                keeps the DOM light no matter how big the log gets.
    ========================================================================= */
 const state = {
-  entries: [],
+  index: [],
+  monthCache: new Map(),
   learnings: Array(LEARNING_SLOTS).fill(''),
   openLearningSlots: new Set(),
   keywords: [], // {term, meaning}
   expandedHistoryId: null,
+  expandedYears: new Set([String(new Date().getFullYear())]),
+  expandedMonths: new Set(),
+  searchQuery: '',
 };
 
 /* =========================================================================
@@ -541,18 +652,30 @@ const historyBody = el('historyBody');
 const statTotal = el('statTotal');
 const statusDot = el('statusDot');
 const statusText = el('statusText');
+const exportBtn = el('exportBtn');
+const searchInput = el('searchInput');
+const searchClearBtn = el('searchClearBtn');
+const searchLabel = el('searchLabel');
+const authScreen = el('authScreen');
+const authForm = el('authForm');
+const authEmail = el('authEmail');
+const authPassword = el('authPassword');
+const authSubmitBtn = el('authSubmitBtn');
+const authError = el('authError');
 
-// wire up static icons
-el('openDrawerBtn').innerHTML = ICONS.menu;
-el('closeDrawerBtn').innerHTML = ICONS.x;
-el('addKwBtn').innerHTML = ICONS.plusBig;
-saveBtn.innerHTML = `${ICONS.check} Save entry`;
-saveHint.innerHTML = `${ICONS.infoSm} Subject and summary are required`;
-exportBtn.innerHTML = `${ICONS.download} Export sheet (.csv)`;
-el('loadingSpin').innerHTML = ICONS.spin;
+// wire up static icons (all via cloneNode — see icon() above)
+el('openDrawerBtn').replaceChildren(icon('menu'));
+el('closeDrawerBtn').replaceChildren(icon('x'));
+el('addKwBtn').replaceChildren(icon('plus'));
+saveBtn.replaceChildren(icon('check'), document.createTextNode(' Save entry'));
+saveHint.replaceChildren(icon('infoSm'), document.createTextNode(' Subject and summary are required'));
+exportBtn.replaceChildren(icon('download'), document.createTextNode(' Export sheet (.csv)'));
+el('loadingSpin').replaceChildren(icon('spin', 'nx-spin'));
 el('loadingSpin').style.display = 'inline-flex';
-el('loadingSpin').querySelector('svg').classList.add('nx-spin');
-toastIcon.innerHTML = ICONS.checkSm;
+el('searchIcon').replaceChildren(icon('search'));
+searchClearBtn.replaceChildren(icon('xSm'));
+el('authLockIcon').replaceChildren(icon('lock'));
+el('signOutBtn').replaceChildren(icon('logout'));
 
 /* =========================================================================
    6) toast + status
@@ -560,7 +683,7 @@ toastIcon.innerHTML = ICONS.checkSm;
 let toastTimer = null;
 function showToast(msg, kind = 'ok') {
   toastMsg.textContent = msg;
-  toastIcon.innerHTML = kind === 'warn' ? ICONS.infoSm : ICONS.checkSm;
+  toastIcon.replaceChildren(icon(kind === 'warn' ? 'infoSm' : 'checkSm'));
   toast.classList.toggle('nx-toast--warn', kind === 'warn');
   toast.classList.add('is-visible');
   clearTimeout(toastTimer);
@@ -590,6 +713,7 @@ function resetForm() {
   updateSummaryCount();
   renderLearnings();
   renderKeywordChips();
+  updateSaveState();
 }
 function updateDateLabel() { dateLongLabel.textContent = formatDateLong(dateInput.value); }
 function updateSummaryCount() {
@@ -618,7 +742,7 @@ function renderLearnings() {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'nx-learning__add';
-      btn.innerHTML = `${ICONS.plus} Add learning ${i + 1}`;
+      btn.append(icon('plus'), document.createTextNode(` Add learning ${i + 1}`));
       btn.addEventListener('click', () => { state.openLearningSlots.add(i); renderLearnings(); learningsContainer.querySelectorAll('textarea')[state.openLearningSlots.size - 1]?.focus(); });
       wrap.appendChild(btn);
     } else {
@@ -635,7 +759,7 @@ function renderLearnings() {
       const rm = document.createElement('button');
       rm.type = 'button';
       rm.className = 'nx-icon-btn nx-icon-btn--sm';
-      rm.innerHTML = ICONS.xSm;
+      rm.appendChild(icon('xSm'));
       rm.addEventListener('click', () => {
         state.learnings[i] = '';
         state.openLearningSlots.delete(i);
@@ -662,10 +786,11 @@ function renderLearnings() {
   learningsCount.textContent = `${filled}/${LEARNING_SLOTS} added · optional`;
 }
 
-/* subject autocomplete */
+/* subject autocomplete — built from the lightweight index, so it stays fast
+   even with years of entries */
 function subjectIndex() {
   const map = new Map();
-  for (const e of state.entries) {
+  for (const e of state.index) {
     if (!e.subject) continue;
     const key = e.subject.trim().toLowerCase();
     if (!map.has(key)) map.set(key, { label: e.subject.trim(), count: 0 });
@@ -688,7 +813,9 @@ function renderSubjectDropdown() {
       const item = document.createElement('button');
       item.type = 'button';
       item.className = 'nx-dropdown__item';
-      item.innerHTML = `<span>${escapeHtml(s.label)}</span><span class="nx-dropdown__count">${s.count}×</span>`;
+      const span1 = document.createElement('span'); span1.textContent = s.label;
+      const span2 = document.createElement('span'); span2.className = 'nx-dropdown__count'; span2.textContent = `${s.count}×`;
+      item.append(span1, span2);
       item.addEventListener('mousedown', () => { subjectInput.value = s.label; subjectDropdown.classList.remove('show'); updateSaveState(); });
       subjectDropdown.appendChild(item);
     });
@@ -696,7 +823,7 @@ function renderSubjectDropdown() {
   } else if (q && !exact) {
     const item = document.createElement('div');
     item.className = 'nx-dropdown__item nx-dropdown__item--static';
-    item.innerHTML = `${ICONS.sparkles}<span>New subject — first time logging this</span>`;
+    item.append(icon('sparkles'), document.createTextNode(' New subject — first time logging this'));
     subjectDropdown.appendChild(item);
     subjectDropdown.classList.add('show');
   } else {
@@ -707,7 +834,7 @@ function renderSubjectDropdown() {
 /* keyword autocomplete */
 function keywordIndex() {
   const map = new Map();
-  for (const e of state.entries) {
+  for (const e of state.index) {
     for (const k of e.keywords || []) {
       if (!k.term) continue;
       map.set(k.term.trim().toLowerCase(), { term: k.term.trim(), meaning: k.meaning || '' });
@@ -729,14 +856,16 @@ function renderKwDropdown() {
       const item = document.createElement('button');
       item.type = 'button';
       item.className = 'nx-dropdown__item';
-      item.innerHTML = `<span class="nx-dropdown__term">${escapeHtml(k.term)}</span>${k.meaning ? `<span class="nx-dropdown__meaning">${escapeHtml(k.meaning)}</span>` : ''}`;
+      const termSpan = document.createElement('span'); termSpan.className = 'nx-dropdown__term'; termSpan.textContent = k.term;
+      item.appendChild(termSpan);
+      if (k.meaning) { const mSpan = document.createElement('span'); mSpan.className = 'nx-dropdown__meaning'; mSpan.textContent = k.meaning; item.appendChild(mSpan); }
       item.addEventListener('mousedown', () => { kwTermInput.value = k.term; kwMeaningInput.value = k.meaning; kwDropdown.classList.remove('show'); kwMeaningInput.focus(); });
       kwDropdown.appendChild(item);
     });
   } else {
     const item = document.createElement('div');
     item.className = 'nx-dropdown__item nx-dropdown__item--static';
-    item.innerHTML = `${ICONS.sparkles}<span>New keyword — nice addition</span>`;
+    item.append(icon('sparkles'), document.createTextNode(' New keyword — nice addition'));
     kwDropdown.appendChild(item);
   }
   kwDropdown.classList.add('show');
@@ -746,13 +875,16 @@ function renderKeywordChips() {
   state.keywords.forEach((k, i) => {
     const li = document.createElement('li');
     li.className = 'nx-kwchip';
-    li.innerHTML = `<div><span class="nx-kwchip__term">${escapeHtml(k.term)}</span>${k.meaning ? `<span class="nx-kwchip__meaning">${escapeHtml(k.meaning)}</span>` : ''}</div>`;
+    const left = document.createElement('div');
+    const termSpan = document.createElement('span'); termSpan.className = 'nx-kwchip__term'; termSpan.textContent = k.term;
+    left.appendChild(termSpan);
+    if (k.meaning) { const mSpan = document.createElement('span'); mSpan.className = 'nx-kwchip__meaning'; mSpan.textContent = k.meaning; left.appendChild(mSpan); }
     const rm = document.createElement('button');
     rm.type = 'button';
     rm.className = 'nx-icon-btn nx-icon-btn--sm';
-    rm.innerHTML = ICONS.xSm;
+    rm.appendChild(icon('xSm'));
     rm.addEventListener('click', () => { state.keywords.splice(i, 1); renderKeywordChips(); });
-    li.appendChild(rm);
+    li.append(left, rm);
     kwList.appendChild(li);
   });
 }
@@ -769,112 +901,238 @@ function addKeyword() {
   renderKeywordChips();
 }
 
-function escapeHtml(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+/* =========================================================================
+   8) history — year/month accordion over the lightweight index, with full
+      entry detail fetched lazily per month and cached. Nothing bulk-renders
+      the whole log at once, so this stays fast and uncrowded at any scale.
+   ========================================================================= */
+function buildEntryItem(e, ym) {
+  const open = state.expandedHistoryId === e.id;
+  const item = document.createElement('div');
+  item.className = 'nx-history-item' + (open ? ' is-open' : '');
+
+  const head = document.createElement('button');
+  head.type = 'button';
+  head.className = 'nx-history-item__head';
+  const meta = document.createElement('div');
+  meta.className = 'nx-history-item__meta';
+  const subjSpan = document.createElement('span'); subjSpan.className = 'nx-history-item__subject'; subjSpan.textContent = e.subject;
+  const timeSpan = document.createElement('span'); timeSpan.className = 'nx-history-item__time'; timeSpan.textContent = formatTime12(e.time);
+  meta.append(subjSpan, timeSpan);
+  head.append(meta, icon('chevron', 'nx-chev'));
+  head.addEventListener('click', () => { state.expandedHistoryId = open ? null : e.id; renderHistoryView(); });
+  item.appendChild(head);
+
+  if (open) {
+    const detail = document.createElement('div');
+    detail.className = 'nx-history-item__detail';
+    const p = document.createElement('p');
+    p.className = 'nx-history-item__summary';
+    p.textContent = e.summary;
+    detail.appendChild(p);
+
+    const learnings = (e.learnings || []).filter(Boolean);
+    if (learnings.length > 0) {
+      const ul = document.createElement('ul');
+      ul.className = 'nx-history-item__learnings';
+      learnings.forEach((l) => { const li = document.createElement('li'); li.textContent = l; ul.appendChild(li); });
+      detail.appendChild(ul);
+    }
+    const kws = e.keywords || [];
+    if (kws.length > 0) {
+      const kwWrap = document.createElement('div');
+      kwWrap.className = 'nx-history-item__kws';
+      kws.forEach((k) => { const span = document.createElement('span'); span.className = 'nx-kw-tag'; span.title = k.meaning || ''; span.textContent = k.term; kwWrap.appendChild(span); });
+      detail.appendChild(kwWrap);
+    }
+    const del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'nx-link-btn nx-link-btn--danger';
+    del.append(icon('trash'), document.createTextNode(' Delete entry'));
+    del.addEventListener('click', () => deleteEntry(e.id, ym));
+    detail.appendChild(del);
+
+    item.appendChild(detail);
+  }
+  return item;
 }
 
-/* =========================================================================
-   8) history
-   ========================================================================= */
-function renderHistory() {
-  historyBody.innerHTML = '';
-  statTotal.textContent = state.entries.length > 0 ? `${state.entries.length} thing${state.entries.length === 1 ? '' : 's'} learned` : '';
+function renderEntriesInto(container, entries, ym) {
+  container.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'nx-history-items';
+  entries.forEach((e) => wrap.appendChild(buildEntryItem(e, ym)));
+  container.appendChild(wrap);
+}
 
-  if (state.entries.length === 0) {
+async function loadMonth(ym) {
+  if (state.monthCache.has(ym)) return state.monthCache.get(ym);
+  const [y, m] = ym.split('-');
+  const start = `${ym}-01`;
+  const lastDay = new Date(Number(y), Number(m), 0).getDate();
+  const end = `${ym}-${pad2(lastDay)}`;
+  try {
+    const { data, error } = await supabase.from('entries').select('*')
+      .gte('date', start).lte('date', end)
+      .order('date', { ascending: false }).order('time', { ascending: false });
+    if (error) throw error;
+    state.monthCache.set(ym, data || []);
+    return data || [];
+  } catch (e) {
+    console.error(e);
+    showToast("Couldn't load that month", 'warn');
+    return [];
+  }
+}
+
+function groupIndexByYearMonth() {
+  const years = new Map(); // year -> Map(ym -> count)
+  for (const e of state.index) {
+    const y = e.date.slice(0, 4), ym = e.date.slice(0, 7);
+    if (!years.has(y)) years.set(y, new Map());
+    const months = years.get(y);
+    months.set(ym, (months.get(ym) || 0) + 1);
+  }
+  return years;
+}
+
+function renderHistoryTree() {
+  historyBody.innerHTML = '';
+  if (state.index.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'nx-empty';
-    empty.innerHTML = `${ICONS.book}<p>Nothing logged yet.<br>Your first learning starts here.</p>`;
+    const p = document.createElement('p');
+    p.innerHTML = 'Nothing logged yet.<br>Your first learning starts here.';
+    empty.append(icon('book'), p);
     historyBody.appendChild(empty);
     return;
   }
+  const years = groupIndexByYearMonth();
+  const yearKeys = [...years.keys()].sort((a, b) => b.localeCompare(a));
 
-  const byDate = new Map();
-  for (const e of state.entries) {
-    if (!byDate.has(e.date)) byDate.set(e.date, []);
-    byDate.get(e.date).push(e);
-  }
-  const dates = [...byDate.keys()].sort((a, b) => b.localeCompare(a));
+  yearKeys.forEach((y) => {
+    const months = years.get(y);
+    const total = [...months.values()].reduce((a, b) => a + b, 0);
+    const yOpen = state.expandedYears.has(y);
+    const yWrap = document.createElement('div');
+    yWrap.className = 'nx-year' + (yOpen ? ' is-open' : '');
 
-  dates.forEach((date) => {
-    const items = byDate.get(date).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    const group = document.createElement('div');
-    group.className = 'nx-history-group';
-    const dateEl = document.createElement('div');
-    dateEl.className = 'nx-history-date';
-    dateEl.innerHTML = `<span class="nx-history-dot"></span>${formatDateLong(date)}`;
-    group.appendChild(dateEl);
-
-    const itemsWrap = document.createElement('div');
-    itemsWrap.className = 'nx-history-items';
-
-    items.forEach((e) => {
-      const open = state.expandedHistoryId === e.id;
-      const item = document.createElement('div');
-      item.className = 'nx-history-item' + (open ? ' is-open' : '');
-
-      const head = document.createElement('button');
-      head.type = 'button';
-      head.className = 'nx-history-item__head';
-      head.innerHTML = `<div class="nx-history-item__meta"><span class="nx-history-item__subject">${escapeHtml(e.subject)}</span><span class="nx-history-item__time">${formatTime12(e.time)}</span></div><span class="nx-chev">${ICONS.chevron}</span>`;
-      head.addEventListener('click', () => { state.expandedHistoryId = open ? null : e.id; renderHistory(); });
-      item.appendChild(head);
-
-      if (open) {
-        const detail = document.createElement('div');
-        detail.className = 'nx-history-item__detail';
-        const p = document.createElement('p');
-        p.className = 'nx-history-item__summary';
-        p.textContent = e.summary;
-        detail.appendChild(p);
-
-        const learnings = (e.learnings || []).filter(Boolean);
-        if (learnings.length > 0) {
-          const ul = document.createElement('ul');
-          ul.className = 'nx-history-item__learnings';
-          learnings.forEach((l) => { const li = document.createElement('li'); li.textContent = l; ul.appendChild(li); });
-          detail.appendChild(ul);
-        }
-        const kws = e.keywords || [];
-        if (kws.length > 0) {
-          const kwWrap = document.createElement('div');
-          kwWrap.className = 'nx-history-item__kws';
-          kws.forEach((k) => { const span = document.createElement('span'); span.className = 'nx-kw-tag'; span.title = k.meaning || ''; span.textContent = k.term; kwWrap.appendChild(span); });
-          detail.appendChild(kwWrap);
-        }
-        const del = document.createElement('button');
-        del.type = 'button';
-        del.className = 'nx-link-btn nx-link-btn--danger';
-        del.innerHTML = `${ICONS.trash} Delete entry`;
-        del.addEventListener('click', () => deleteEntry(e.id));
-        detail.appendChild(del);
-
-        item.appendChild(detail);
-      }
-      itemsWrap.appendChild(item);
+    const yHead = document.createElement('button');
+    yHead.type = 'button';
+    yHead.className = 'nx-year__head';
+    const yLabel = document.createElement('span'); yLabel.className = 'nx-year__label'; yLabel.textContent = y;
+    const yBadge = document.createElement('span'); yBadge.className = 'nx-badge'; yBadge.textContent = total;
+    yHead.append(yLabel, yBadge, icon('chevron', 'nx-chev'));
+    yHead.addEventListener('click', () => {
+      if (yOpen) state.expandedYears.delete(y); else state.expandedYears.add(y);
+      renderHistoryTree();
     });
-    group.appendChild(itemsWrap);
-    historyBody.appendChild(group);
+    yWrap.appendChild(yHead);
+
+    if (yOpen) {
+      const mList = document.createElement('div');
+      mList.className = 'nx-month-list';
+      const monthKeys = [...months.keys()].sort((a, b) => b.localeCompare(a));
+      monthKeys.forEach((ym) => {
+        const count = months.get(ym);
+        const mOpen = state.expandedMonths.has(ym);
+        const mWrap = document.createElement('div');
+        mWrap.className = 'nx-month' + (mOpen ? ' is-open' : '');
+
+        const mHead = document.createElement('button');
+        mHead.type = 'button';
+        mHead.className = 'nx-month__head';
+        const mLabel = document.createElement('span'); mLabel.className = 'nx-month__label'; mLabel.textContent = formatMonthLabel(ym);
+        const mBadge = document.createElement('span'); mBadge.className = 'nx-badge nx-badge--sm'; mBadge.textContent = count;
+        mHead.append(mLabel, mBadge, icon('chevron', 'nx-chev nx-chev--sm'));
+        mHead.addEventListener('click', async () => {
+          if (mOpen) { state.expandedMonths.delete(ym); renderHistoryTree(); return; }
+          state.expandedMonths.add(ym);
+          renderHistoryTree();
+          const entries = await loadMonth(ym);
+          const body = document.getElementById(`nx-month-${ym}`);
+          if (body) renderEntriesInto(body, entries, ym);
+        });
+        mWrap.appendChild(mHead);
+
+        const body = document.createElement('div');
+        body.className = 'nx-month__body';
+        body.id = `nx-month-${ym}`;
+        if (mOpen) {
+          if (state.monthCache.has(ym)) {
+            renderEntriesInto(body, state.monthCache.get(ym), ym);
+          } else {
+            const loading = document.createElement('div');
+            loading.className = 'nx-month__loading';
+            loading.append(icon('spin', 'nx-spin'), document.createTextNode('Loading entries…'));
+            body.appendChild(loading);
+          }
+        }
+        mWrap.appendChild(body);
+        mList.appendChild(mWrap);
+      });
+      yWrap.appendChild(mList);
+    }
+    historyBody.appendChild(yWrap);
   });
+}
+
+async function renderSearchResults() {
+  const q = state.searchQuery.trim();
+  historyBody.innerHTML = '';
+  const loading = document.createElement('div');
+  loading.className = 'nx-month__loading';
+  loading.append(icon('spin', 'nx-spin'), document.createTextNode('Searching…'));
+  historyBody.appendChild(loading);
+
+  const like = `%${q.replace(/[%_,()]/g, ' ').trim()}%`;
+  try {
+    const { data, error } = await supabase.from('entries').select('*')
+      .or(`subject.ilike.${like},summary.ilike.${like}`)
+      .order('date', { ascending: false }).limit(50);
+    if (error) throw error;
+    historyBody.innerHTML = '';
+    searchLabel.style.display = 'block';
+    searchLabel.textContent = `${data.length} result${data.length === 1 ? '' : 's'} for "${q}"${data.length === 50 ? ' (showing first 50)' : ''}`;
+    if (data.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'nx-empty';
+      const p = document.createElement('p'); p.textContent = 'No matching entries.';
+      empty.append(icon('search'), p);
+      historyBody.appendChild(empty);
+      return;
+    }
+    renderEntriesInto(historyBody, data, null);
+  } catch (e) {
+    console.error(e);
+    historyBody.innerHTML = '';
+    showToast('Search failed', 'warn');
+  }
+}
+const debouncedSearch = debounce(() => renderHistoryView(), 350);
+
+function renderHistoryView() {
+  if (state.searchQuery.trim()) { renderSearchResults(); }
+  else { searchLabel.style.display = 'none'; renderHistoryTree(); }
 }
 
 /* =========================================================================
    9) supabase data layer
    ========================================================================= */
-async function loadEntries() {
+async function refreshIndex() {
   try {
-    const { data, error } = await supabase.from('entries').select('*').order('date', { ascending: false }).order('time', { ascending: false });
+    const { data, error } = await supabase.from('entries').select('id,date,subject,keywords').order('date', { ascending: false });
     if (error) throw error;
-    state.entries = data || [];
+    state.index = data || [];
     setStatus('synced');
   } catch (e) {
     console.error(e);
     setStatus('offline');
     showToast("Couldn't reach the database", 'warn');
   }
-  renderHistory();
+  statTotal.textContent = state.index.length > 0 ? `${state.index.length} thing${state.index.length === 1 ? '' : 's'} learned` : '';
   renderSubjectDropdown();
+  renderHistoryView();
 }
 
 async function saveEntry() {
@@ -891,9 +1149,17 @@ async function saveEntry() {
   try {
     const { error } = await supabase.from('entries').insert([payload]);
     if (error) throw error;
+    const ym = payload.date.slice(0, 7);
+    state.monthCache.delete(ym);
+    state.expandedYears.add(payload.date.slice(0, 4));
     showToast(`Logged for ${formatDateShort(payload.date)}`);
     resetForm();
-    await loadEntries();
+    await refreshIndex();
+    if (state.expandedMonths.has(ym)) {
+      const entries = await loadMonth(ym);
+      const body = document.getElementById(`nx-month-${ym}`);
+      if (body) renderEntriesInto(body, entries, ym);
+    }
   } catch (e) {
     console.error(e);
     showToast("Couldn't save — check your connection", 'warn');
@@ -902,13 +1168,20 @@ async function saveEntry() {
   }
 }
 
-async function deleteEntry(id) {
+async function deleteEntry(id, ym) {
+  if (!confirm('Delete this entry? This can\'t be undone.')) return;
   try {
     const { error } = await supabase.from('entries').delete().eq('id', id);
     if (error) throw error;
     if (state.expandedHistoryId === id) state.expandedHistoryId = null;
+    if (ym) state.monthCache.delete(ym);
     showToast('Entry removed');
-    await loadEntries();
+    await refreshIndex();
+    if (ym && state.expandedMonths.has(ym)) {
+      const entries = await loadMonth(ym);
+      const body = document.getElementById(`nx-month-${ym}`);
+      if (body) renderEntriesInto(body, entries, ym);
+    }
   } catch (e) {
     console.error(e);
     showToast("Couldn't delete — try again", 'warn');
@@ -916,7 +1189,50 @@ async function deleteEntry(id) {
 }
 
 /* =========================================================================
-   10) wire up events
+   10) auth — a single-user sign-in gate backed by Supabase Auth. Combined
+       with row-level security (see SETUP.md), this is what actually keeps
+       the log private: the anon key alone is public by design and grants
+       no access once RLS is on.
+   ========================================================================= */
+async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session;
+}
+function showAuthScreen() {
+  authScreen.classList.add('show');
+  loadingState.style.display = 'none';
+}
+function hideAuthScreen() {
+  authScreen.classList.remove('show');
+}
+authForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authError.textContent = '';
+  authSubmitBtn.disabled = true;
+  authSubmitBtn.textContent = 'Signing in…';
+  try {
+    const { error } = await supabase.auth.signInWithPassword({
+      email: authEmail.value.trim(),
+      password: authPassword.value,
+    });
+    if (error) throw error;
+    hideAuthScreen();
+    authPassword.value = '';
+    await startApp();
+  } catch (err) {
+    authError.textContent = err.message || 'Sign in failed';
+  } finally {
+    authSubmitBtn.disabled = false;
+    authSubmitBtn.textContent = 'Sign in';
+  }
+});
+el('signOutBtn').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+/* =========================================================================
+   11) wire up remaining events
    ========================================================================= */
 dateInput.addEventListener('change', updateDateLabel);
 subjectInput.addEventListener('input', () => { renderSubjectDropdown(); updateSaveState(); });
@@ -937,11 +1253,58 @@ el('resetFormBtn').addEventListener('click', resetForm);
 el('openDrawerBtn').addEventListener('click', () => { drawer.classList.add('is-open'); scrim.classList.add('is-visible'); });
 el('closeDrawerBtn').addEventListener('click', () => { drawer.classList.remove('is-open'); scrim.classList.remove('is-visible'); });
 scrim.addEventListener('click', () => { drawer.classList.remove('is-open'); scrim.classList.remove('is-visible'); });
-exportBtn.addEventListener('click', () => downloadCSV(state.entries));
+
+searchInput.addEventListener('input', () => {
+  state.searchQuery = searchInput.value;
+  searchClearBtn.style.display = state.searchQuery ? 'flex' : 'none';
+  debouncedSearch();
+});
+searchClearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  state.searchQuery = '';
+  searchClearBtn.style.display = 'none';
+  renderHistoryView();
+});
+
+exportBtn.addEventListener('click', async () => {
+  exportBtn.disabled = true;
+  const originalLabel = exportBtn.innerHTML;
+  try {
+    const { data, error } = await supabase.from('entries').select('*').order('date', { ascending: true }).order('time', { ascending: true });
+    if (error) throw error;
+    downloadCSV(data || []);
+  } catch (e) {
+    console.error(e);
+    showToast("Couldn't export — try again", 'warn');
+  } finally {
+    exportBtn.disabled = false;
+  }
+});
 
 /* =========================================================================
-   11) boot
+   12) boot
    ========================================================================= */
+async function startApp() {
+  resetForm();
+  await refreshIndex();
+  loadingState.style.display = 'none';
+  formCard.style.display = 'block';
+
+  // live sync: reflect changes made from other tabs/devices immediately
+  supabase
+    .channel('entries-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, async () => {
+      state.monthCache.clear();
+      await refreshIndex();
+      for (const ym of state.expandedMonths) {
+        const entries = await loadMonth(ym);
+        const body = document.getElementById(`nx-month-${ym}`);
+        if (body) renderEntriesInto(body, entries, ym);
+      }
+    })
+    .subscribe();
+}
+
 async function boot() {
   if (!isConfigured) {
     el('setupBanner').classList.add('show');
@@ -950,19 +1313,16 @@ async function boot() {
   }
   supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  resetForm();
-  await loadEntries();
+  const session = await checkSession();
+  if (!session) { showAuthScreen(); return; }
+  await startApp();
 
-  loadingState.style.display = 'none';
-  formCard.style.display = 'block';
-
-  // live sync: reflect changes made from other tabs/devices immediately
-  supabase
-    .channel('entries-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, () => loadEntries())
-    .subscribe();
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_OUT') location.reload();
+  });
 }
 boot();
 </script>
 </body>
 </html>
+a
